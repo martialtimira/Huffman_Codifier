@@ -7,16 +7,23 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
 
-        ArrayList<Pair<String, Integer>> prob_list = new ArrayList<Pair<String, Integer>>();
+        ArrayList<Pair<String, Float>> prob_list = new ArrayList<>();
 
         try(BufferedReader br = new BufferedReader(new FileReader("Input_Files/prob_table.csv"))) {
-
+            String line;
+            while ((line = br.readLine()) != null) {
+                System.out.println("LINE: " + line);
+                String[] split_line = line.split(",");
+                Pair<String, Float> element = new Pair<>(split_line[0], Float.parseFloat(split_line[1]));
+                System.out.println("Pair Created: [" + element.getFirst() + ", " + element.getSecond() + "]");
+                prob_list.add(element);
+            }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        System.out.println("Hello world!");
+        System.out.println("LIST SIZE: " + prob_list.size());
     }
 }
