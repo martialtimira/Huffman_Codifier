@@ -9,7 +9,7 @@ public class Main {
 
         ArrayList<Pair<String, Integer>> prob_list = new ArrayList<Pair<String, Integer>>();
 
-        try(BufferedReader br = new BufferedReader(new FileReader("prob_table.csv"))) {
+        try(BufferedReader br = new BufferedReader(new FileReader("Input_Files/prob_table.csv"))) {
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
