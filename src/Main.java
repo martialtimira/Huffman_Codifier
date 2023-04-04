@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,14 +11,11 @@ public class Main {
         try(BufferedReader br = new BufferedReader(new FileReader("Input_Files/prob_table.csv"))) {
             String line;
             while ((line = br.readLine()) != null) {
-                System.out.println("LINE: " + line);
                 String[] split_line = line.split(",");
                 Pair<String, Float> element = new Pair<>(split_line[0], Float.parseFloat(split_line[1]));
                 System.out.println("Pair Created: [" + element.getFirst() + ", " + element.getSecond() + "]");
                 prob_list.add(element);
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
