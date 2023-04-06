@@ -1,6 +1,4 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -8,8 +6,12 @@ import java.util.HashMap;
 public class Main {
     public static void main(String[] args) {
 
+        int sz  = 10000;
         ArrayList<Pair<String, Float>> prob_list = new ArrayList<>();
         ArrayList<TreeNode> tree = new ArrayList<>();
+        float entropy = 0;
+
+        String msg = generateRandom(sz);
 
         try(BufferedReader br = new BufferedReader(new FileReader("Input_Files/prob_table.csv"))) {
             String line;
@@ -17,28 +19,66 @@ public class Main {
                 String[] split_line = line.split(",");
                 Pair<String, Float> element = new Pair<>(split_line[0], Float.parseFloat(split_line[1]));
                 System.out.println("Pair Created: [" + element.getFirst() + ", " + element.getSecond() + "]");
+                entropy += element.getSecond() * (Math.log(element.getSecond()) / Math.log(2));
                 prob_list.add(element);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        entropy = -entropy;
+
         Pair<String, Float> a, b;
 
         // Genera l'arbre binari segons les probabilitats
-        while (prob_list.size() > 2) {
+        while (prob_list.size() > 1) {
             sort(prob_list);
             a = prob_list.remove(0);
             b = prob_list.remove(0);
             addNode(a.getFirst(), b.getFirst(), tree);
             prob_list.add(new Pair<>(a.getFirst()+b.getFirst(), a.getSecond()+b.getSecond()));
         }
-        addNode(tree.get(0).getVal(), tree.get(1).getVal(), tree);
 
         // Genera la taula amb els valors binaris equivalent de cada simbol
         HashMap<String, String> dict = new HashMap<>();
         generateTable(tree.get(0), "", dict);
 
+        String comp = compres(msg, dict);
+
+        System.out.println("\nInitial message had " + sz + " values, at 8 bits per value -> " + sz * 8 + " bits.");
+        System.out.println("Once compressed the message has " + comp.length() + " bits.");
+
+        float compRatio = (sz * 8) / (float) comp.length();
+
+        System.out.println("Factor de compressió: " + compRatio + ":1.");
+        System.out.println("Entropia (H): " + entropy);
+    }
+
+    // Comprimeix la String msg substituint els valors pels binaris calculats anteriorment.
+    private static String compres(String msg, HashMap<String, String> dict) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : msg.toCharArray()) {
+            if (c != '1' && c != '0') sb.append(dict.get(String.valueOf(c)));
+            if (c == '1') sb.append(dict.get("10"));
+        }
+        return sb.toString();
+    }
+
+    // Genera una String amb valors random seguint les probabilitats donades
+    private static String generateRandom(int sz) {
+        StringBuilder s = new StringBuilder();
+        int random;
+        for (int i = 0; i < sz; i++) {
+            random = (int)(Math.random() * 100);
+
+            if (random <= 5) s.append("9");
+            else if (random <= 15) s.append("10");
+            else if (random <= 30) s.append("J");
+            else if (random <= 50) s.append("Q");
+            else if (random <= 70) s.append("K");
+            else s.append("D");
+        }
+        return s.toString();
     }
 
     // Ordena l'ArrayList de prioritat més baixa a prioritat més alta.
