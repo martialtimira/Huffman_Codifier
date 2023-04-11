@@ -18,7 +18,6 @@ public class Main {
             while ((line = br.readLine()) != null) {
                 String[] split_line = line.split(",");
                 Pair<String, Float> element = new Pair<>(split_line[0], Float.parseFloat(split_line[1]));
-                System.out.println("Pair Created: [" + element.getFirst() + ", " + element.getSecond() + "]");
                 entropy += element.getSecond() * (Math.log(element.getSecond()) / Math.log(2));
                 prob_list.add(element);
             }
@@ -26,6 +25,7 @@ public class Main {
             throw new RuntimeException(e);
         }
 
+        int non_codified_bit_number_per_value = (int)Math.ceil((Math.log(prob_list.size()) / Math.log(2)));
         entropy = -entropy;
 
         Pair<String, Float> a, b;
@@ -42,13 +42,14 @@ public class Main {
         // Genera la taula amb els valors binaris equivalent de cada simbol
         HashMap<String, String> dict = new HashMap<>();
         generateTable(tree.get(0), "", dict);
+        System.out.println(("TABLE GENERATED (Char = bits): "+ dict));
 
         String comp = compres(msg, dict);
 
-        System.out.println("\nInitial message had " + sz + " values, at 8 bits per value -> " + sz * 8 + " bits.");
+        System.out.println("\nInitial message had " + sz + " values, at "+ non_codified_bit_number_per_value  + " bits per value -> " + sz * non_codified_bit_number_per_value + " bits.");
         System.out.println("Once compressed the message has " + comp.length() + " bits.");
 
-        float compRatio = (sz * 8) / (float) comp.length();
+        float compRatio = (sz * non_codified_bit_number_per_value) / (float) comp.length();
 
         System.out.println("Factor de compressió: " + compRatio + ":1.");
         System.out.println("Entropia (H): " + entropy);
